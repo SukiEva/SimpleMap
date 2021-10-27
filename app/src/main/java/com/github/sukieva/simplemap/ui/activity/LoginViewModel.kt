@@ -13,7 +13,7 @@ import java.util.regex.Pattern
 
 class LoginViewModel : ViewModel() {
 
-    val interests = listOf("游泳", "足球", "篮球","电影","编程","唱歌","跳舞","下棋")
+    val interests = listOf("游泳", "足球", "篮球", "电影", "编程", "唱歌", "跳舞", "下棋")
 
     // 登录
     var account = mutableStateOf("")
@@ -43,6 +43,10 @@ class LoginViewModel : ViewModel() {
     var emailValid = mutableStateOf(false)
 
     fun login() {
+        if (account.value == "" || password.value == "") {
+            "账号或密码不能为空".errorToast()
+            return
+        }
         viewModelScope.launch {
             DataManager.saveData("account", account.value)
             DataManager.saveData("password", password.value)

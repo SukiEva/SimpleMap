@@ -2,6 +2,9 @@
 buildscript {
     ext {
         compose_version = '1.0.4'
+        dialogs_version = '0.6.1'
+        accompanist_version = '0.20.0'
+        lifecycle_version = '2.4.0-rc01'
     }
     repositories {
         google()

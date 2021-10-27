@@ -159,7 +159,6 @@ fun LoginScreen(model: LoginViewModel = viewModel()) {
                         .fillMaxHeight()
                         .padding(top = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
-
                 ) {
                     AnimatableSun(Modifier.size(150.dp))
                     MyTextField(state = account, label = "账号")
@@ -170,7 +169,10 @@ fun LoginScreen(model: LoginViewModel = viewModel()) {
                         Checkbox(checked = remAccount.value, onCheckedChange = { remAccount.value = it })
                         Spacer(modifier = Modifier.width(30.dp))
                         Text(text = "记住密码")
-                        Checkbox(checked = remPassword.value, onCheckedChange = { remPassword.value = it })
+                        Checkbox(checked = remPassword.value, onCheckedChange = {
+                            remPassword.value = it
+                            if (it) remAccount.value = it
+                        })
                     }
                     OutlinedButton(
                         onClick = { model.login() }, modifier = Modifier

@@ -2,12 +2,10 @@ package com.github.sukieva.simplemap.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -45,6 +43,10 @@ fun SplashScreen(onSplashCompleted: () -> Unit) {
                         contentDescription = "Logo",
                         modifier = Modifier.padding(8.dp)
                     )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(text = "导航专业")
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(text = "数据准确")
                 }
             }
         }

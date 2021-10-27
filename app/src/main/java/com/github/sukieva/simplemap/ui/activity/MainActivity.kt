@@ -1,4 +1,4 @@
-package com.github.sukieva.simplemap
+package com.github.sukieva.simplemap.ui.activity
 
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,11 +9,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,8 +23,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.baidu.mapapi.map.BaiduMap
-import com.github.sukieva.simplemap.ui.activity.LoginActivity
-import com.github.sukieva.simplemap.ui.activity.MainViewModel
 import com.github.sukieva.simplemap.ui.activity.base.BaseActivity
 import com.github.sukieva.simplemap.ui.activity.base.InitView
 import com.github.sukieva.simplemap.ui.components.IconItem
@@ -33,7 +31,7 @@ import com.github.sukieva.simplemap.ui.components.SplashScreen
 import com.github.sukieva.simplemap.utils.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.input
+import com.vanpra.composematerialdialogs.customView
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 
@@ -113,6 +111,12 @@ private fun MainContent(
     val locateDialogState = rememberMaterialDialogState()
     val longitude = remember { model.longitude }
     val latitude = remember { model.latitude }
+    val citySearch = remember { model.citySearch }
+    val distanceDialogState = rememberMaterialDialogState()
+    val beginLongitude = remember { model.beginLongitude }
+    val beginLatitude = remember { model.beginLatitude }
+    val endLongitude = remember { model.endLongitude }
+    val endLatitude = remember { model.endLatitude }
     MaterialDialog(dialogState = locateDialogState, buttons = {
         positiveButton("Ok") {
             model.locateDialog()
@@ -131,6 +135,31 @@ private fun MainContent(
             OutlinedTextField(value = latitude.value, onValueChange = { latitude.value = it }, label = { Text(text = "纬度") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
         }
     }
+    MaterialDialog(dialogState = distanceDialogState, buttons = {
+        positiveButton("Ok") {
+            model.calculateDistance()
+        }
+        negativeButton("Cancel") {
+            beginLatitude.value = ""
+            beginLongitude.value = ""
+            endLongitude.value = ""
+            endLatitude.value = ""
+        }
+    }) {
+        customView {
+            Column(modifier = Modifier.padding(all = 20.dp)) {
+                Text(text = "公里数计算")
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = "起点 : ")
+                OutlinedTextField(value = beginLongitude.value, onValueChange = { beginLongitude.value = it }, label = { Text(text = "起点经度") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                OutlinedTextField(value = beginLatitude.value, onValueChange = { beginLatitude.value = it }, label = { Text(text = "起点纬度") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                Text(text = "终点 : ")
+                OutlinedTextField(value = endLongitude.value, onValueChange = { endLongitude.value = it }, label = { Text(text = "终点经度") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                OutlinedTextField(value = endLatitude.value, onValueChange = { endLatitude.value = it }, label = { Text(text = "终点纬度") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+            }
+        }
+    }
+
 
     BackdropScaffold(
         appBar = { },
@@ -152,9 +181,14 @@ private fun MainContent(
                         .size(52.dp)
                         .clickable { start<LoginActivity>() })
                     OutlinedTextField(
-                        value = "", onValueChange = {},
+                        value = citySearch.value, onValueChange = { citySearch.value = it },
                         modifier = Modifier.padding(start = 10.dp),
-                        placeholder = { Text(text = "搜索、上下滑动") },
+                        placeholder = { Text(text = "城市定位、上下滑动") },
+                        trailingIcon = {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = null, modifier = Modifier.clickable {
+                                model.citySearchSubmit()
+                            })
+                        }
                     )
                     SearchMenu()
                 }
@@ -213,16 +247,10 @@ private fun MainContent(
                             locateDialogState.show()
                         })
                     Spacer(modifier = Modifier.size(25.dp))
-                    IconItem(text = "城市定位",
-                        icon = Icons.Outlined.LocationCity,
-                        onClick = {
-
-                        })
-                    Spacer(modifier = Modifier.size(25.dp))
                     IconItem(text = "公里计算",
                         icon = Icons.Outlined.Calculate,
                         onClick = {
-
+                            distanceDialogState.show()
                         })
                     Spacer(modifier = Modifier.size(25.dp))
                 }

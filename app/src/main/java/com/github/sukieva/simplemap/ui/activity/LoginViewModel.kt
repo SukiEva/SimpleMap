@@ -1,13 +1,9 @@
 package com.github.sukieva.simplemap.ui.activity
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.sukieva.simplemap.MainActivity
 import com.github.sukieva.simplemap.utils.*
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.vanpra.composematerialdialogs.MaterialDialogState
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -33,8 +29,8 @@ class LoginViewModel : ViewModel() {
     var description = mutableStateOf("")
     var locationProvince = mutableStateOf("")
     var locationMayor = mutableStateOf("")
-    var savedAccount = ""
-    var savedPassword = ""
+    private var savedAccount = ""
+    private var savedPassword = ""
 
     // 验证
     var accountValid = mutableStateOf(false)
@@ -45,6 +41,17 @@ class LoginViewModel : ViewModel() {
     fun login() {
         if (account.value == "" || password.value == "") {
             "账号或密码不能为空".errorToast()
+            return
+        }
+        if (account.value != savedAccount) {
+            "账号错误".errorToast()
+            account.value = ""
+            password.value = ""
+            return
+        }
+        if (password.value != savedPassword) {
+            "密码错误".errorToast()
+            password.value = ""
             return
         }
         viewModelScope.launch {
